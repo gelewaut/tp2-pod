@@ -1,28 +1,29 @@
 package ar.edu.itba.pod.tp2.client;
 
-import ar.edu.itba.pod.tp2.mappers.Query1Mapper;
+import ar.edu.itba.pod.tp2.mappers.Query4Mapper;
+import ar.edu.itba.pod.tp2.models.FluxValue;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
-import ar.edu.itba.pod.tp2.reducers.Query1ReducerFactory;
+import ar.edu.itba.pod.tp2.reducers.Query4ReducerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
-import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.*;
-import com.hazelcast.mapreduce.*;
-import com.hazelcast.ringbuffer.ReadResultSet;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ICompletableFuture;
+import com.hazelcast.core.IList;
+import com.hazelcast.core.IMap;
+import com.hazelcast.mapreduce.Job;
+import com.hazelcast.mapreduce.JobTracker;
+import com.hazelcast.mapreduce.KeyValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
+import java.util.Map;
+import java.util.Properties;
 
-public class Client1 {
-    private static final Logger logger = LoggerFactory.getLogger(Client1.class);
+public class Client4 {
+    private static final Logger logger = LoggerFactory.getLogger(Client4.class);
     public static void main(String[] args) {
         Properties props = System.getProperties();
 //        String addresses[] = props.getProperty("addresses").split(";");
@@ -53,21 +54,20 @@ public class Client1 {
 //        final KeyValueSource<Integer, Station> source = KeyValueSource.fromMap(map);
         final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
 
-        JobTracker jobTracker = hazelcastInstance.getJobTracker("Query1");
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("Query4");
 
         Job<String, Ride> job = jobTracker.newJob( source );
-        ICompletableFuture<Map<String, Long>> future = job
-                .mapper(new Query1Mapper() )
-                .reducer( new Query1ReducerFactory() )
+        ICompletableFuture<Map<String, FluxValue>> future = job
+                .mapper(new Query4Mapper() )
+                .reducer( new Query4ReducerFactory() )
                 .submit();
 
         // Wait and retrieve the result
         try{
-            Map<String, Long> result = future.get();
-            for (Map.Entry<String, Long> entry: result.entrySet()) {
+            Map<String, FluxValue> result = future.get();
+            for (Map.Entry<String, FluxValue> entry: result.entrySet()) {
                 logger.info(entry.getKey() + ": " + entry.getValue());
             }
-            printResult(result, map, outPath);
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
@@ -75,16 +75,5 @@ public class Client1 {
         map.clear();
         list.clear();
         HazelcastClient.shutdownAll();
-    }
-
-    private static void printResult(Map<String,Long> result, IMap<Integer, Station> map, String outPath) throws IOException {
-        FileWriter file = new FileWriter(outPath+"query1.csv");
-        PrintWriter filePrinter = new PrintWriter(file);
-        filePrinter.println("FALTA ORDENAR E IMPRIMIR BIEN");
-        filePrinter.println("station_a;station_b;trips_between_a_b");
-        for (Map.Entry<String, Long> entry: result.entrySet()) {
-            String[] pks = entry.getKey().split(":");
-        }
-        filePrinter.close();
     }
 }

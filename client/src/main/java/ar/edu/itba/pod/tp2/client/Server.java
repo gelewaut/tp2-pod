@@ -1,12 +1,10 @@
-package ar.edu.itba.pod.tp2.server;
+package ar.edu.itba.pod.tp2.client;
 
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
-import io.grpc.ServerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collections;
 
 public class Server {

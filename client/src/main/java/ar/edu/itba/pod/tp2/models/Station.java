@@ -48,4 +48,16 @@ public class Station implements DataSerializable {
     public int getPk() {
         return pk;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
 }

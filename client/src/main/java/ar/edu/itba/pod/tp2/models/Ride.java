@@ -1,5 +1,7 @@
 package ar.edu.itba.pod.tp2.models;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.HazelcastInstanceAware;
 import com.hazelcast.nio.Address;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
@@ -8,13 +10,15 @@ import com.hazelcast.nio.serialization.DataSerializable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-public class Ride implements DataSerializable {
+public class Ride implements DataSerializable{
     private LocalDateTime startDate;
     private int startPk;
     private LocalDateTime endDate;
     private int endPk;
     private boolean isMember;
     private Address address = new Address();
+
+    public Ride(){};
 
     public Ride (
             LocalDateTime startDate,
