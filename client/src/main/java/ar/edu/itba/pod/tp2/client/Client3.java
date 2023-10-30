@@ -84,7 +84,13 @@ public class Client3 {
         FileWriter file = new FileWriter(outPath+"query3.csv");
         PrintWriter filePrinter = new PrintWriter(file);
         filePrinter.println("start_station;end_station;start_date;minutes");
-        result.entrySet().stream().sorted((entry1, entry2) -> entry2.getValue().getMinutes().compareTo(entry1.getValue().getMinutes()));
+        result.entrySet().stream().sorted((entry1, entry2) -> {
+            int aux = entry2.getValue().getMinutes().compareTo(entry1.getValue().getMinutes());
+            if (aux == 0) {
+                return entry1.getKey().compareTo(entry2.getKey());
+            }
+            return aux;
+        });
         Set<String> keys = result.keySet();
         for (String key : keys) {
             filePrinter.println(key + ";" + result.get(key).getStartDate() + ";" + result.get(key).getMinutes());

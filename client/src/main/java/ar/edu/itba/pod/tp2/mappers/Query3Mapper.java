@@ -30,7 +30,6 @@ public class Query3Mapper implements Mapper<String, Ride, String, Query3Value>, 
         Station startStation = map.get(ride.getStartPk());
         Station endStation = map.get(ride.getEndPk());
         if (ride.getStartPk() != ride.getEndPk() && startStation != null && endStation != null) {
-            logger.info("hola");
             String s = startStation.getName() + ";" + endStation.getName();
             long rideTime = Duration.between(ride.getStartDate(), ride.getEndDate()).toMinutes();
             Query3Value value = new Query3Value(rideTime, ride.getStartDate());
