@@ -44,4 +44,8 @@ public class FluxValue implements DataSerializable {
         address = new Address();
         address.readData(in); // since Address is DataSerializable let it read its own internal state
     }
+
+    public long getPositive() {
+        return positive;
+    }
 }

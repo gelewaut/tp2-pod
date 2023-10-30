@@ -2,6 +2,7 @@ package ar.edu.itba.pod.tp2.client;
 
 import ar.edu.itba.pod.tp2.mappers.Query1Mapper;
 import ar.edu.itba.pod.tp2.mappers.Query3Mapper;
+import ar.edu.itba.pod.tp2.models.FluxValue;
 import ar.edu.itba.pod.tp2.models.Query3Value;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
@@ -84,16 +85,15 @@ public class Client3 {
         FileWriter file = new FileWriter(outPath+"query3.csv");
         PrintWriter filePrinter = new PrintWriter(file);
         filePrinter.println("start_station;end_station;start_date;minutes");
-        result.entrySet().stream().sorted((entry1, entry2) -> {
+        List<Map.Entry<String, Query3Value>> entries = result.entrySet().stream().sorted((entry1, entry2) -> {
             int aux = entry2.getValue().getMinutes().compareTo(entry1.getValue().getMinutes());
             if (aux == 0) {
                 return entry1.getKey().compareTo(entry2.getKey());
             }
             return aux;
-        });
-        Set<String> keys = result.keySet();
-        for (String key : keys) {
-            filePrinter.println(key + ";" + result.get(key).getStartDate() + ";" + result.get(key).getMinutes());
+        }).toList();
+        for (Map.Entry<String, Query3Value> entry : entries) {
+            filePrinter.println(entry.getKey() + ";" + entry.getValue().getStartDate() + ";" + entry.getValue().getMinutes());
         }
         filePrinter.close();
     }
