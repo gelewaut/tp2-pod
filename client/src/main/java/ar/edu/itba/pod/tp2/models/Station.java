@@ -17,7 +17,7 @@ public class Station implements DataSerializable {
 
     public Station() {};
     public Station (
-            int pk,
+            long pk,
             String name,
             double latitude,
             double longitude) {

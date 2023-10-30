@@ -24,7 +24,7 @@ public class DataParser {
 
         File bikesCsv = new File(inPath+"bikes.csv");
         File stationsCsv = new File(inPath+"stations.csv");
-        IMap<Integer, Station> stations = instance.getMap("g9-map");
+        IMap<Long, Station> stations = instance.getMap("g9-map");
         IList<Ride> rides = instance.getList("g9-list");
 
         try{
@@ -44,9 +44,9 @@ public class DataParser {
 
                 Ride r = new Ride(
                         LocalDateTime.parse(values[0], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                        Integer.parseInt(values[1]),
+                        Long.parseLong(values[1]),
                         LocalDateTime.parse(values[2], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                        Integer.parseInt(values[3]),
+                        Long.parseLong(values[3]),
                         isMember==1 ? Boolean.TRUE : Boolean.FALSE
                 );
                 rides.add(r);
@@ -54,7 +54,7 @@ public class DataParser {
 
             while ((lineStations = brStations.readLine()) != null) {
                 String[] values = lineStations.split(";");
-                int pk = Integer.parseInt(values[0]);
+                long pk = Long.parseLong(values[0]);
                 Station s = new Station(pk,
                         values[1],
                         Double.parseDouble(values[2]),
