@@ -65,9 +65,9 @@ public class Client1 {
         try{
             Map<String, Long> result = future.get();
             for (Map.Entry<String, Long> entry: result.entrySet()) {
-                logger.info(entry.getKey() + ": " + entry.getValue());
+                logger.info(entry.getKey() + ";" + entry.getValue());
             }
-            printResult(result, map, outPath);
+            printResult(result, outPath);
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
@@ -77,13 +77,20 @@ public class Client1 {
         HazelcastClient.shutdownAll();
     }
 
-    private static void printResult(Map<String,Long> result, IMap<Integer, Station> map, String outPath) throws IOException {
+    private static void printResult(Map<String,Long> result, String outPath) throws IOException {
         FileWriter file = new FileWriter(outPath+"query1.csv");
         PrintWriter filePrinter = new PrintWriter(file);
-        filePrinter.println("FALTA ORDENAR E IMPRIMIR BIEN");
         filePrinter.println("station_a;station_b;trips_between_a_b");
-        for (Map.Entry<String, Long> entry: result.entrySet()) {
-            String[] pks = entry.getKey().split(":");
+        List<Map.Entry<String, Long>> sortedEntries = result.entrySet().stream().sorted((entry1, entry2) -> {
+            int longComparison = Long.compare(entry2.getValue(), entry1.getValue());
+            if (longComparison != 0) {
+                return longComparison;
+            } else {
+                return entry1.getKey().compareTo(entry2.getKey());
+            }
+        }).toList();
+        for (Map.Entry<String, Long> entry: sortedEntries) {
+            filePrinter.println(entry.getKey()+";"+entry.getValue());
         }
         filePrinter.close();
     }

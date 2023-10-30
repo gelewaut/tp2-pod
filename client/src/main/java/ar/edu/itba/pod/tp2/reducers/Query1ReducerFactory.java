@@ -19,7 +19,7 @@ public class Query1ReducerFactory implements ReducerFactory<String, Long, Long> 
 
         @Override
         public void reduce(Long value) {
-            sum += value.longValue();
+            sum += value;
         }
 
         @Override
