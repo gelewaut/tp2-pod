@@ -10,20 +10,23 @@ import com.hazelcast.mapreduce.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Query2Mapper implements Mapper<String, Ride, Long, Double>, HazelcastInstanceAware {
+public class Query2Mapper implements Mapper<String, Ride, String, Double>, HazelcastInstanceAware {
     private static final Logger logger = LoggerFactory.getLogger(Query2Mapper.class);
     private transient HazelcastInstance hazelcastInstance;
     @Override
-    public void map(String key, Ride ride, Context<Long, Double> context) {
-        IMap<Integer, Station> map = hazelcastInstance.getMap("g9-map");
+    public void map(String key, Ride ride, Context<String, Double> context) {
+        IMap<Long, Station> map = hazelcastInstance.getMap("g9-map");
         Station startStation = map.get(ride.getStartPk());
-        Station endstation = map.get(ride.getStartPk());
-        String name = startStation.getName();
-        Double distance = haversine(startStation.getLatitude(),
-                startStation.getLongitude(),
-                endstation.getLatitude(),
-                endstation.getLongitude());
-        context.emit( ride.getStartPk(), distance);
+        Station endstation = map.get(ride.getEndPk());
+        if (startStation != null && endstation != null){
+            String name = startStation.getName();
+            Double distance = haversine(startStation.getLatitude(),
+                    startStation.getLongitude(),
+                    endstation.getLatitude(),
+                    endstation.getLongitude());
+            context.emit( name, distance);
+        }
+
     }
 
     @Override

@@ -25,9 +25,10 @@ public class Client2 {
 //        String addresses[] = props.getProperty("addresses").split(";");
 //        String inPath = props.getProperty("inPath");
 //        String outPath = props.getProperty("outPath");
+//        int n = props.getProperty("n");
         String[] addresses = {"127.0.0.1:5701"};
-        String inPath = "C:\\Users\\gonel\\Documents\\POD\\tpe2-g9\\client\\src\\main\\resources\\";
-        String outPath = "C:\\Users\\gonel\\Documents\\POD\\tpe2-g9\\client\\src\\main\\resources\\";
+        String inPath = "/Users/fran/Documents/ITBA/4TO/POD/tp2-pod/tp2-pod/client/src/main/resources/";
+        String outPath = "/Users/fran/Documents/ITBA/4TO/POD/tp2-pod/tp2-pod/client/src/main/resources/";
 
 
         // Client Config
@@ -53,34 +54,46 @@ public class Client2 {
         JobTracker jobTracker = hazelcastInstance.getJobTracker("Query2");
 
         Job<String, Ride> job = jobTracker.newJob( source );
-//        ICompletableFuture<Map<String, Long>> future = job
-//                .mapper(new Query2Mapper() )
-//                .reducer( new Query2ReducerFactory() )
-//                .submit();
+        ICompletableFuture<Map<String, Double>> future = job
+                .mapper(new Query2Mapper() )
+                .reducer( new Query2ReducerFactory() )
+                .submit();
 
         // Wait and retrieve the result
-//        try{
-//            Map<String, Long> result = future.get();
-//            for (Map.Entry<String, Long> entry: result.entrySet()) {
-//                logger.info(entry.getKey() + ": " + entry.getValue());
-//            }
-//            printResult(result, map, outPath);
-//        } catch (Exception ex) {
-//            logger.error(ex.getMessage());
-//        }
+        try{
+            Map<String, Double> result = future.get();
+
+
+            printResult(result, map, outPath, 1);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+        }
 
         map.clear();
         list.clear();
         HazelcastClient.shutdownAll();
     }
 
-    private static void printResult(Map<String,Long> result, IMap<Integer, Station> map, String outPath) throws IOException {
-        FileWriter file = new FileWriter(outPath+"query1.csv");
+    private static void printResult(Map<String,Double> result, IMap<Integer, Station> map, String outPath, int n) throws IOException {
+        FileWriter file = new FileWriter(outPath+"query2.csv");
         PrintWriter filePrinter = new PrintWriter(file);
-        filePrinter.println("FALTA ORDENAR E IMPRIMIR BIEN");
-        filePrinter.println("station_a;station_b;trips_between_a_b");
-        for (Map.Entry<String, Long> entry: result.entrySet()) {
-            String[] pks = entry.getKey().split(":");
+        filePrinter.println("station_a;avg_distance");
+        List<Map.Entry<String,Double>> entries = result.entrySet().stream().sorted((entry1, entry2) ->{
+            int aux = entry2.getValue().compareTo(entry1.getValue());
+            if (aux == 0 ){
+                aux = entry1.getKey().compareTo(entry2.getKey());
+            }
+            return aux;
+        }).toList();
+
+        int i = 0;
+        for (Map.Entry<String, Double> entry: entries) {
+            if (i < n ) {
+                filePrinter.println(entry.getKey() + ";" + String.format("%.2f", entry.getValue()));
+            }else {
+                break;
+            }
+            i++;
         }
         filePrinter.close();
     }
