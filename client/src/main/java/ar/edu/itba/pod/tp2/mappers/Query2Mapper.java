@@ -10,7 +10,7 @@ import com.hazelcast.mapreduce.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Query2Mapper implements Mapper<String, Ride, String, Double>, HazelcastInstanceAware {
+public class Query2Mapper implements Mapper<String, Ride, Long, Double>, HazelcastInstanceAware {
     private static final Logger logger = LoggerFactory.getLogger(Query2Mapper.class);
     private transient HazelcastInstance hazelcastInstance;
     @Override

@@ -1,10 +1,15 @@
 package ar.edu.itba.pod.tp2.reducers;
 
+import ar.edu.itba.pod.tp2.mappers.Query4Mapper;
 import ar.edu.itba.pod.tp2.models.FluxValue;
 import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Query4ReducerFactory implements ReducerFactory<String, Long, FluxValue> {
+
+    private static final Logger logger = LoggerFactory.getLogger(Query4ReducerFactory.class);
     @Override
     public Reducer<Long, FluxValue> newReducer(String s) {
         return new Query4Reducer();

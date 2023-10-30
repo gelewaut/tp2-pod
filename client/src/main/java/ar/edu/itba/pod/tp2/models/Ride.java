@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 
 public class Ride implements DataSerializable{
     private LocalDateTime startDate;
-    private int startPk;
+    private long startPk;
     private LocalDateTime endDate;
-    private int endPk;
+    private long endPk;
     private boolean isMember;
     private Address address = new Address();
 
@@ -22,9 +22,9 @@ public class Ride implements DataSerializable{
 
     public Ride (
             LocalDateTime startDate,
-            int startPk,
+            long startPk,
             LocalDateTime endDate,
-            int endPk,
+            long endPk,
             boolean isMember) {
         this.startDate = startDate;
         this.startPk = startPk;
@@ -35,9 +35,9 @@ public class Ride implements DataSerializable{
     @Override
     public void writeData(ObjectDataOutput out) throws IOException {
         out.writeUTF(startDate.toString());
-        out.writeInt(startPk);
+        out.writeLong(startPk);
         out.writeUTF(endDate.toString());
-        out.writeInt(endPk);
+        out.writeLong(endPk);
         out.writeBoolean(isMember);
         address.writeData (out);
     }
@@ -45,19 +45,19 @@ public class Ride implements DataSerializable{
     @Override
     public void readData(ObjectDataInput in) throws IOException {
         startDate = LocalDateTime.parse(in.readUTF());
-        startPk = in.readInt();
+        startPk = in.readLong();
         endDate = LocalDateTime.parse(in.readUTF());
-        endPk = in.readInt();
+        endPk = in.readLong();
         isMember = in.readBoolean();
         address = new Address();
         address.readData(in); // since Address is DataSerializable let it read its own internal state
     }
 
-    public int getEndPk() {
+    public long getEndPk() {
         return endPk;
     }
 
-    public int getStartPk() {
+    public long getStartPk() {
         return startPk;
     }
 

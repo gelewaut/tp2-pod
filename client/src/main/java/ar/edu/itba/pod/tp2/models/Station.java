@@ -8,13 +8,14 @@ import com.hazelcast.nio.serialization.DataSerializable;
 import java.io.IOException;
 
 public class Station implements DataSerializable {
-    private int pk;
+    private long pk;
     private String name;
     private double latitude;
     private double longitude;
 
     private Address address = new Address();
 
+    public Station() {};
     public Station (
             int pk,
             String name,
@@ -28,7 +29,7 @@ public class Station implements DataSerializable {
 
     @Override
     public void writeData(ObjectDataOutput out) throws IOException {
-        out.writeInt(pk);
+        out.writeLong(pk);
         out.writeUTF(name);
         out.writeDouble(latitude);
         out.writeDouble(longitude);
@@ -37,7 +38,7 @@ public class Station implements DataSerializable {
 
     @Override
     public void readData(ObjectDataInput in) throws IOException {
-        pk = in.readInt();
+        pk = in.readLong();
         name = in.readUTF();
         latitude = in.readDouble();
         longitude = in.readDouble();
@@ -45,7 +46,7 @@ public class Station implements DataSerializable {
         address.readData(in); // since Address is DataSerializable let it read its own internal state
     }
 
-    public int getPk() {
+    public long getPk() {
         return pk;
     }
 
