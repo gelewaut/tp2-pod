@@ -1,6 +1,5 @@
 package ar.edu.itba.pod.tp2.reducers;
 
-import ar.edu.itba.pod.tp2.mappers.Query4Mapper;
 import ar.edu.itba.pod.tp2.models.FluxValue;
 import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;

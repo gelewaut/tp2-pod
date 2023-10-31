@@ -7,12 +7,9 @@ import ar.edu.itba.pod.tp2.reducers.Query1ReducerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
-import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
-import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.*;
 import com.hazelcast.mapreduce.*;
-import com.hazelcast.ringbuffer.ReadResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

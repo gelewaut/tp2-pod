@@ -1,4 +1,4 @@
-package ar.edu.itba.pod.tp2.client;
+package ar.edu.itba.pod.tp2.server;
 
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;

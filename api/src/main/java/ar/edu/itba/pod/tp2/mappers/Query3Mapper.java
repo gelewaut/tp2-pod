@@ -12,7 +12,6 @@ package ar.edu.itba.pod.tp2.mappers;
         import org.slf4j.Logger;
         import org.slf4j.LoggerFactory;
         import java.time.Duration;
-        import java.util.Map;
 
 
 public class Query3Mapper implements Mapper<String, Ride, String, Query3Value>, HazelcastInstanceAware {

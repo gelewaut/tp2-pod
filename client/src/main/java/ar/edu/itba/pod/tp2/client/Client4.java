@@ -2,7 +2,6 @@ package ar.edu.itba.pod.tp2.client;
 
 import ar.edu.itba.pod.tp2.mappers.Query4Mapper;
 import ar.edu.itba.pod.tp2.models.FluxValue;
-import ar.edu.itba.pod.tp2.models.Query3Value;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
 import ar.edu.itba.pod.tp2.reducers.Query4ReducerFactory;
@@ -24,12 +23,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 public class Client4 {
     private static final Logger logger = LoggerFactory.getLogger(Client4.class);

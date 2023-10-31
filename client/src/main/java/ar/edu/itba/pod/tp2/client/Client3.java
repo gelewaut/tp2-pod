@@ -1,22 +1,16 @@
 package ar.edu.itba.pod.tp2.client;
 
-import ar.edu.itba.pod.tp2.mappers.Query1Mapper;
 import ar.edu.itba.pod.tp2.mappers.Query3Mapper;
-import ar.edu.itba.pod.tp2.models.FluxValue;
 import ar.edu.itba.pod.tp2.models.Query3Value;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
-import ar.edu.itba.pod.tp2.reducers.Query1ReducerFactory;
 import ar.edu.itba.pod.tp2.reducers.Query3ReducerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
-import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
-import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.*;
 import com.hazelcast.mapreduce.*;
-import com.hazelcast.ringbuffer.ReadResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
