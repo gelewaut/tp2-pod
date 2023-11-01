@@ -51,13 +51,16 @@ public class Client3 {
             FileWriter file = new FileWriter(outPath+"time3.txt");
             PrintWriter filePrinter = new PrintWriter(file);
             filePrinter.println(LocalDateTime.now() + " - Inicio de la lectura del archivo");
+            logger.info("Inicio de la lectura del archivo");
             new DataParser().readFile(hazelcastInstance, inPath, "g9-query3-map", "g9-query3-list");
             filePrinter.println(LocalDateTime.now() + " - Fin de lectura del archivo");
+            logger.info("Fin de lectura del archivo");
 
             IMap<Long, Station> map = hazelcastInstance.getMap("g9-query3-map");
             IList<Ride> list = hazelcastInstance.getList("g9-query3-list");
 
             filePrinter.println(LocalDateTime.now() + " - Inicio del trabajo map/reduce");
+            logger.info("Inicio del trabajo map/reduce");
 
             final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
             JobTracker jobTracker = hazelcastInstance.getJobTracker("Query3");
@@ -80,6 +83,8 @@ public class Client3 {
             }
 
             filePrinter.println(LocalDateTime.now() + " - Fin del trabajo map/reduce");
+            logger.info("Fin del trabajo map/reduce");
+            filePrinter.close();
 
             map.clear();
             list.clear();

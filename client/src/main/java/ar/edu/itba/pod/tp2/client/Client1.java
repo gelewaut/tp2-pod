@@ -27,8 +27,17 @@ public class Client1 {
         String outPath = props.getProperty("outPath");
         String address = props.getProperty("addresses");
 
-        if (inPath == null || outPath == null || address == null) {
-            logger.error("Missing Arguments");
+        if (address == null) {
+            logger.error("Invalid Address");
+            return;
+        }
+
+        if (inPath == null) {
+            logger.error("Missing inPath");
+            return;
+        }
+        if (outPath == null) {
+            logger.error("Missing outPath");
             return;
         }
         String[] addresses = address.split(";");
@@ -50,13 +59,16 @@ public class Client1 {
             FileWriter file = new FileWriter(outPath+"time1.txt");
             PrintWriter filePrinter = new PrintWriter(file);
             filePrinter.println(LocalDateTime.now() + " - Inicio de la lectura del archivo");
+            logger.info("Inicio de la lectura del archivo");
             new DataParser().readFile(hazelcastInstance, inPath, "g9-query1-map", "g9-query1-list");
             filePrinter.println(LocalDateTime.now() + " - Fin de lectura del archivo");
+            logger.info("Fin de lectura del archivo");
 
             IMap<Integer, Station> map = hazelcastInstance.getMap("g9-query1-map");
             IList<Ride> list = hazelcastInstance.getList("g9-query1-list");
 
             filePrinter.println(LocalDateTime.now() + " - Inicio del trabajo map/reduce");
+            logger.info("Inicio del trabajo map/reduce");
 
             final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
             JobTracker jobTracker = hazelcastInstance.getJobTracker("Query1");
@@ -76,6 +88,8 @@ public class Client1 {
             }
 
             filePrinter.println(LocalDateTime.now() + " - Fin del trabajo map/reduce");
+            logger.info("Fin del trabajo map/reduce");
+            filePrinter.close();
 
             map.clear();
             list.clear();

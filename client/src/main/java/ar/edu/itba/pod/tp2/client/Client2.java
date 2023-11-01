@@ -52,13 +52,16 @@ public class Client2 {
             PrintWriter filePrinter = new PrintWriter(file);
 
             filePrinter.println(LocalDateTime.now() + " - Inicio de la lectura del archivo");
+            logger.info("Inicio de la lectura del archivo");
             new DataParser().readFile(hazelcastInstance, inPath, "g9-query2-map", "g9-query2-list");
             filePrinter.println(LocalDateTime.now() + " - Fin de lectura del archivo");
+            logger.info("Fin de lectura del archivo");
 
             IMap<Integer, Station> map = hazelcastInstance.getMap("g9-query2-map");
             IList<Ride> list = hazelcastInstance.getList("g9-query2-list");
 
             filePrinter.println(LocalDateTime.now() + " - Inicio del trabajo map/reduce");
+            logger.info("Inicio del trabajo map/reduce");
 
             final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
 
@@ -81,6 +84,8 @@ public class Client2 {
             }
 
             filePrinter.println(LocalDateTime.now() + " - Fin del trabajo map/reduce");
+            logger.info("Fin del trabajo map/reduce");
+            filePrinter.close();
 
             map.clear();
             list.clear();

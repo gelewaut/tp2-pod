@@ -39,7 +39,18 @@ public class DataParser {
             String lineBikes = brBikes.readLine(); // skip first line
             String lineStations = brStations.readLine(); // skip first line
 
+            logger.info("Loading stations");
+            while ((lineStations = brStations.readLine()) != null) {
+                String[] values = lineStations.split(";");
+                long pk = Long.parseLong(values[0]);
+                Station s = new Station(pk,
+                        values[1],
+                        Double.parseDouble(values[2]),
+                        Double.parseDouble(values[3]));
+                stations.put(pk,s);
+            }
 
+            logger.info("loading rides");
             while ((lineBikes = brBikes.readLine()) != null) {
                 String[] values = lineBikes.split(";");
                 Integer isMember = Integer.parseInt(values[4]);
@@ -52,16 +63,6 @@ public class DataParser {
                         isMember==1 ? Boolean.TRUE : Boolean.FALSE
                 );
                 rides.add(r);
-            }
-
-            while ((lineStations = brStations.readLine()) != null) {
-                String[] values = lineStations.split(";");
-                long pk = Long.parseLong(values[0]);
-                Station s = new Station(pk,
-                        values[1],
-                        Double.parseDouble(values[2]),
-                        Double.parseDouble(values[3]));
-                stations.put(pk,s);
             }
 
             logger.info("Finished loading csv " + LocalTime.now());
