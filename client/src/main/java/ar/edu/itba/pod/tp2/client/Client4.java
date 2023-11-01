@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +33,17 @@ public class Client4 {
     private static final Logger logger = LoggerFactory.getLogger(Client4.class);
     public static void main(String[] args) {
         Properties props = System.getProperties();
-        LocalDate startDate = LocalDate.parse(props.getProperty("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        LocalDate endDate = LocalDate.parse(props.getProperty("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        String[] addresses = props.getProperty("addresses").split(";");
         String inPath = props.getProperty("inPath");
         String outPath = props.getProperty("outPath");
+        String address = props.getProperty("addresses");
 
-
-
+        if (inPath == null || outPath == null || address == null || props.getProperty("startDate") == null || props.getProperty("startDate") == null) {
+            logger.error("Missing Arguments");
+            return;
+        }
+        LocalDate startDate = LocalDate.parse(props.getProperty("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        LocalDate endDate = LocalDate.parse(props.getProperty("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String[] addresses = address.split(";");
 
         // Client Config
         ClientConfig clientConfig = new ClientConfig();
@@ -54,37 +58,52 @@ public class Client4 {
         clientConfig.setNetworkConfig(clientNetworkConfig);
         HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 
-        new DataParser().readFile(hazelcastInstance, inPath, "g9-query4-map", "g9-query4-list");
-        IMap<Integer, Station> map = hazelcastInstance.getMap("g9-query4-map");
-        IMap<String, LocalDate> map2 = hazelcastInstance.getMap("g9-query-4-dates");
-        map2.put("startDate", startDate);
-        map2.put("endDate", endDate);
-        IList<Ride> list = hazelcastInstance.getList("g9-query4-list");
+        try {
+            FileWriter file = new FileWriter(outPath+"time4.txt");
+            PrintWriter filePrinter = new PrintWriter(file);
+            filePrinter.println(LocalDateTime.now() + " - Inicio de la lectura del archivo");
+            new DataParser().readFile(hazelcastInstance, inPath, "g9-query4-map", "g9-query4-list");
+            filePrinter.println(LocalDateTime.now() + " - Fin de lectura del archivo");
 
-//        final KeyValueSource<Integer, Station> source = KeyValueSource.fromMap(map);
-        final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
+            IMap<Integer, Station> map = hazelcastInstance.getMap("g9-query4-map");
+            IMap<String, LocalDate> map2 = hazelcastInstance.getMap("g9-query-4-dates");
+            map2.clear();
+            map2.put("startDate", startDate);
+            map2.put("endDate", endDate);
+            IList<Ride> list = hazelcastInstance.getList("g9-query4-list");
 
-        JobTracker jobTracker = hazelcastInstance.getJobTracker("Query4");
+            filePrinter.println(LocalDateTime.now() + " - Inicio del trabajo map/reduce");
 
-        Job<String, Ride> job = jobTracker.newJob( source );
-        ICompletableFuture<Map<String, FluxValue>> future = job
-                .mapper(new Query4Mapper() )
-                .reducer( new Query4ReducerFactory() )
-                .submit();
+            final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
 
-        // Wait and retrieve the result
-        try{
-            Map<String, FluxValue> result = future.get();
-            for (Map.Entry<String, FluxValue> entry: result.entrySet()) {
-                logger.info(entry.getKey() + ": " + entry.getValue());
+            JobTracker jobTracker = hazelcastInstance.getJobTracker("Query4");
+
+            Job<String, Ride> job = jobTracker.newJob( source );
+            ICompletableFuture<Map<String, FluxValue>> future = job
+                    .mapper(new Query4Mapper() )
+                    .reducer( new Query4ReducerFactory() )
+                    .submit();
+
+            // Wait and retrieve the result
+            try{
+                Map<String, FluxValue> result = future.get();
+                for (Map.Entry<String, FluxValue> entry: result.entrySet()) {
+                    logger.info(entry.getKey() + ": " + entry.getValue());
+                }
+                printResult(result, outPath);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage());
             }
-            printResult(result, outPath);
+
+            filePrinter.println(LocalDateTime.now() + " - Fin del trabajo map/reduce");
+
+            map.clear();
+            map2.clear();
+            list.clear();
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
 
-        map.clear();
-        list.clear();
         HazelcastClient.shutdownAll();
     }
 

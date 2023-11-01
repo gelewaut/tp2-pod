@@ -19,9 +19,9 @@ public class Server {
         config.setGroupConfig(groupConfig);
 
         // Network Config
-        MulticastConfig multicastConfig = new MulticastConfig();
+        MulticastConfig multicastConfig = new MulticastConfig().setEnabled(true);
         JoinConfig joinConfig = new JoinConfig().setMulticastConfig(multicastConfig);
-//        InterfacesConfig interfacesConfig = new InterfacesConfig().setInterfaces(Collections.singletonList("192.168.1.*")).setEnabled(true);
+//        InterfacesConfig interfacesConfig = new InterfacesConfig().setInterfaces(Collections.singletonList("10.6.0.*")).setEnabled(true);
         InterfacesConfig interfacesConfig = new InterfacesConfig().setInterfaces(Collections.singletonList("127.0.0.*")).setEnabled(true);
         NetworkConfig networkConfig = new NetworkConfig().setInterfaces(interfacesConfig).setJoin(joinConfig);
 
@@ -30,7 +30,7 @@ public class Server {
         // Management Center Config
         ManagementCenterConfig managementCenterConfig = new ManagementCenterConfig()
                 .setUrl("http://localhost:8080/mancenter_3_8_5/").setEnabled(true);
-//        config.setManagementCenterConfig(managementCenterConfig);
+        config.setManagementCenterConfig(managementCenterConfig);
 
         //  Start cluster
         Hazelcast.newHazelcastInstance(config);

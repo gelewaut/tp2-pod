@@ -26,6 +26,8 @@ public class DataParser {
         File stationsCsv = new File(inPath+"stations.csv");
         IMap<Long, Station> stations = instance.getMap(map);
         IList<Ride> rides = instance.getList(list);
+        stations.clear();
+        rides.clear();
 
         try{
             Reader fileReaderBikes = new FileReader(bikesCsv);
