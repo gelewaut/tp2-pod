@@ -23,12 +23,10 @@ public class Client3 {
     private static final Logger logger = LoggerFactory.getLogger(Client1.class);
     public static void main(String[] args) {
         Properties props = System.getProperties();
-//        String addresses[] = props.getProperty("addresses").split(";");
-//        String inPath = props.getProperty("inPath");
-//        String outPath = props.getProperty("outPath");
-        String[] addresses = {"127.0.0.1:5701"};
-        String inPath = "/Users/juaarias/Documents/PAW/tp2-pod/client/src/main/resources/";
-        String outPath = "/Users/juaarias/Documents/PAW/tp2-pod/client/src/main/resources/";
+        String[] addresses = props.getProperty("addresses").split(";");
+        String inPath = props.getProperty("inPath");
+        String outPath = props.getProperty("outPath");
+
 
 
         // Client Config
@@ -44,9 +42,9 @@ public class Client3 {
         clientConfig.setNetworkConfig(clientNetworkConfig);
         HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 
-        new DataParser().readFile(hazelcastInstance, inPath);
-        IMap<Long, Station> map = hazelcastInstance.getMap("g9-map");
-        IList<Ride> list = hazelcastInstance.getList("g9-list");
+        new DataParser().readFile(hazelcastInstance, inPath, "g9-query3-map", "g9-query3-list");
+        IMap<Long, Station> map = hazelcastInstance.getMap("g9-query3-map");
+        IList<Ride> list = hazelcastInstance.getList("g9-query3-list");
 
 //        final KeyValueSource<Integer, Station> source = KeyValueSource.fromMap(map);
         final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);

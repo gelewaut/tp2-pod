@@ -21,15 +21,11 @@ import java.util.*;
 public class Client2 {
     private static final Logger logger = LoggerFactory.getLogger(Client1.class);
     public static void main(String[] args) {
-//        Properties props = System.getProperties();
-//        String addresses[] = props.getProperty("addresses").split(";");
-//        String inPath = props.getProperty("inPath");
-//        String outPath = props.getProperty("outPath");
-//        int n = props.getProperty("n");
-        String[] addresses = {"127.0.0.1:5701"};
-        String inPath = "/Users/fran/Documents/ITBA/4TO/POD/tp2-pod/tp2-pod/client/src/main/resources/";
-        String outPath = "/Users/fran/Documents/ITBA/4TO/POD/tp2-pod/tp2-pod/client/src/main/resources/";
-
+        Properties props = System.getProperties();
+        String[] addresses = props.getProperty("addresses").split(";");
+        String inPath = props.getProperty("inPath");
+        String outPath = props.getProperty("outPath");
+        int n = Integer.parseInt(props.getProperty("N"));
 
         // Client Config
         ClientConfig clientConfig = new ClientConfig();
@@ -64,7 +60,7 @@ public class Client2 {
             Map<String, Double> result = future.get();
 
 
-            printResult(result, map, outPath, 1);
+            printResult(result, map, outPath, n);
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }

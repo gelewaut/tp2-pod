@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -31,17 +32,12 @@ public class Client4 {
     private static final Logger logger = LoggerFactory.getLogger(Client4.class);
     public static void main(String[] args) {
         Properties props = System.getProperties();
-//        LocalDate startDate = LocalDate.parse(props.getProperty("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-//        LocalDate endDate = LocalDate.parse(props.getProperty("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-//        String addresses[] = props.getProperty("addresses").split(";");
-//        String inPath = props.getProperty("inPath");
-//        String outPath = props.getProperty("outPath");
-        LocalDate startDate = LocalDate.of(2029, 6, 26);
-        LocalDate endDate = LocalDate.of(2023, 6, 27);
+        LocalDate startDate = LocalDate.parse(props.getProperty("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        LocalDate endDate = LocalDate.parse(props.getProperty("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String[] addresses = props.getProperty("addresses").split(";");
+        String inPath = props.getProperty("inPath");
+        String outPath = props.getProperty("outPath");
 
-        String[] addresses = {"127.0.0.1:5701"};
-        String inPath = "/Users/juaarias/Documents/PAW/tp2-pod/client/src/main/resources/";
-        String outPath = "/Users/juaarias/Documents/PAW/tp2-pod/client/src/main/resources/";
 
 
 
@@ -58,12 +54,12 @@ public class Client4 {
         clientConfig.setNetworkConfig(clientNetworkConfig);
         HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 
-        new DataParser().readFile(hazelcastInstance, inPath);
-        IMap<Integer, Station> map = hazelcastInstance.getMap("g9-map");
+        new DataParser().readFile(hazelcastInstance, inPath, "g9-query4-map", "g9-query4-list");
+        IMap<Integer, Station> map = hazelcastInstance.getMap("g9-query4-map");
         IMap<String, LocalDate> map2 = hazelcastInstance.getMap("g9-query-4-dates");
         map2.put("startDate", startDate);
         map2.put("endDate", endDate);
-        IList<Ride> list = hazelcastInstance.getList("g9-list");
+        IList<Ride> list = hazelcastInstance.getList("g9-query4-list");
 
 //        final KeyValueSource<Integer, Station> source = KeyValueSource.fromMap(map);
         final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
