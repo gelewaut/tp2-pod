@@ -25,7 +25,7 @@ public class Query3Mapper implements Mapper<String, Ride, String, Query3Value>, 
 
     @Override
     public void map(String key, Ride ride, Context<String, Query3Value> context) {
-        IMap<Long, Station> map = hazelcastInstance.getMap("g9-map");
+        IMap<Long, Station> map = hazelcastInstance.getMap("g9-query3-map");
         Station startStation = map.get(ride.getStartPk());
         Station endStation = map.get(ride.getEndPk());
         if (ride.getStartPk() != ride.getEndPk() && startStation != null && endStation != null) {

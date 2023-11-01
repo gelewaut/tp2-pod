@@ -15,7 +15,7 @@ public class Station implements DataSerializable {
 
     private Address address = new Address();
 
-    public Station() {};
+    public Station() {}
     public Station (
             long pk,
             String name,

@@ -18,14 +18,14 @@ import java.time.format.DateTimeFormatter;
 
 public class DataParser {
     private static final Logger logger = LoggerFactory.getLogger(DataParser.class);
-    public void readFile (HazelcastInstance instance, String inPath) {
+    public void readFile (HazelcastInstance instance, String inPath, String map, String list) {
 
         logger.info("Start Upload Csv " + LocalTime.now());
 
         File bikesCsv = new File(inPath+"bikes.csv");
         File stationsCsv = new File(inPath+"stations.csv");
-        IMap<Long, Station> stations = instance.getMap("g9-map");
-        IList<Ride> rides = instance.getList("g9-list");
+        IMap<Long, Station> stations = instance.getMap(map);
+        IList<Ride> rides = instance.getList(list);
 
         try{
             Reader fileReaderBikes = new FileReader(bikesCsv);

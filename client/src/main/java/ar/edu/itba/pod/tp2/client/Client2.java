@@ -40,9 +40,9 @@ public class Client2 {
         clientConfig.setNetworkConfig(clientNetworkConfig);
         HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 
-        new DataParser().readFile(hazelcastInstance, inPath);
-        IMap<Integer, Station> map = hazelcastInstance.getMap("g9-map");
-        IList<Ride> list = hazelcastInstance.getList("g9-list");
+        new DataParser().readFile(hazelcastInstance, inPath, "g9-query2-map", "g9-query2-list");
+        IMap<Integer, Station> map = hazelcastInstance.getMap("g9-query2-map");
+        IList<Ride> list = hazelcastInstance.getList("g9-query2-list");
 
 //        final KeyValueSource<Integer, Station> source = KeyValueSource.fromMap(map);
         final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);

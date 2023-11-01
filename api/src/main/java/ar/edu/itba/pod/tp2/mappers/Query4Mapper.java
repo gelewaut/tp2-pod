@@ -24,7 +24,7 @@ public class Query4Mapper implements Mapper<String, Ride, String, Long>, Hazelca
 
     @Override
     public void map(String key, Ride ride, Context<String, Long> context) {
-        IMap<Long, Station> map = hazelcastInstance.getMap("g9-map");
+        IMap<Long, Station> map = hazelcastInstance.getMap("g9-query4-map");
         IMap<String, LocalDate> map2 = hazelcastInstance.getMap("g9-query-4-dates");
         Station startStation = map.get(ride.getStartPk());
         Station endStation = map.get(ride.getEndPk());

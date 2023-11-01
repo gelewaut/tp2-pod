@@ -16,7 +16,7 @@ public class Query1Mapper implements Mapper<String, Ride, String, Long>, Hazelca
     private transient HazelcastInstance hazelcastInstance;
     @Override
     public void map(String key, Ride ride, Context<String, Long> context) {
-        IMap<Long, Station> map = hazelcastInstance.getMap("g9-map");
+        IMap<Long, Station> map = hazelcastInstance.getMap("g9-query1-map");
         Station startStation = map.get(ride.getStartPk());
         Station endStation = map.get(ride.getEndPk());
         if (ride.getStartPk() != ride.getEndPk() && startStation != null && endStation != null) {

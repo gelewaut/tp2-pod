@@ -18,7 +18,7 @@ public class Ride implements DataSerializable{
     private boolean isMember;
     private Address address = new Address();
 
-    public Ride(){};
+    public Ride(){}
 
     public Ride (
             LocalDateTime startDate,

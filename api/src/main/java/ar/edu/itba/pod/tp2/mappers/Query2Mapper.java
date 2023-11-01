@@ -15,7 +15,7 @@ public class Query2Mapper implements Mapper<String, Ride, String, Double>, Hazel
     private transient HazelcastInstance hazelcastInstance;
     @Override
     public void map(String key, Ride ride, Context<String, Double> context) {
-        IMap<Long, Station> map = hazelcastInstance.getMap("g9-map");
+        IMap<Long, Station> map = hazelcastInstance.getMap("g9-query2-map");
         Station startStation = map.get(ride.getStartPk());
         Station endstation = map.get(ride.getEndPk());
         if (startStation != null && endstation != null){
