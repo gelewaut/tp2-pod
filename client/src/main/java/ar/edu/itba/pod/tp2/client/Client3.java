@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.tp2.client;
 
+import ar.edu.itba.pod.tp2.collators.Query3Collator;
 import ar.edu.itba.pod.tp2.combiners.Query3CombinerFactory;
 import ar.edu.itba.pod.tp2.mappers.Query3Mapper;
 import ar.edu.itba.pod.tp2.models.Query3Value;
@@ -69,24 +70,24 @@ public class Client3 {
             JobTracker jobTracker = hazelcastInstance.getJobTracker("Query3");
 
             Job<String, Ride> job = jobTracker.newJob( source );
-            ICompletableFuture<Map<String, Query3Value>> future;
+            ICompletableFuture<List<Map.Entry<String, Query3Value>>> future;
 
             if (props.getProperty("c") == null) {
                 future = job
                         .mapper(new Query3Mapper())
                         .reducer(new Query3ReducerFactory())
-                        .submit();
+                        .submit(new Query3Collator());
             } else {
                 future = job
                         .mapper(new Query3Mapper() )
                         .combiner(new Query3CombinerFactory())
                         .reducer( new Query3ReducerFactory() )
-                        .submit();
+                        .submit(new Query3Collator());
             }
 
             // Wait and retrieve the result
             try{
-                Map<String, Query3Value> result = future.get();
+                List<Map.Entry<String, Query3Value>> result = future.get();
                 printResult(result, outPath);
             } catch (Exception ex) {
                 logger.error(ex.getMessage());
@@ -105,18 +106,11 @@ public class Client3 {
         HazelcastClient.shutdownAll();
     }
 
-    private static void printResult(Map<String,Query3Value> result, String outPath) throws IOException {
+    private static void printResult(List<Map.Entry<String,Query3Value>> result, String outPath) throws IOException {
         FileWriter file = new FileWriter(outPath+"query3.csv");
         PrintWriter filePrinter = new PrintWriter(file);
         filePrinter.println("start_station;end_station;start_date;minutes");
-        List<Map.Entry<String, Query3Value>> entries = result.entrySet().stream().sorted((entry1, entry2) -> {
-            int aux = entry2.getValue().getMinutes().compareTo(entry1.getValue().getMinutes());
-            if (aux == 0) {
-                return entry1.getKey().compareTo(entry2.getKey());
-            }
-            return aux;
-        }).toList();
-        for (Map.Entry<String, Query3Value> entry : entries) {
+        for (Map.Entry<String, Query3Value> entry : result) {
             filePrinter.println(entry.getKey() + ";" + entry.getValue().getStartDate() + ";" + entry.getValue().getMinutes());
         }
         filePrinter.close();
