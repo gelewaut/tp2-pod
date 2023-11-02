@@ -40,7 +40,7 @@ public class Query3CombinerFactory implements CombinerFactory<String, Query3Valu
                 this.longestTrip = value.getMinutes();
                 this.longestTripDate = value.getStartDate();
             } else if (value.getMinutes() == this.longestTrip) {
-                if (longestTripDate.isAfter(value.getStartDate())) {
+                if (value.getStartDate() != null && longestTripDate.isAfter(value.getStartDate())) {
                     longestTripDate = value.getStartDate();
                 }
             }

@@ -71,16 +71,13 @@ public class Client3 {
             Job<String, Ride> job = jobTracker.newJob( source );
             ICompletableFuture<Map<String, Query3Value>> future = job
                     .mapper(new Query3Mapper() )
-                    .combiner(new Query3CombinerFactory())
+//                    .combiner(new Query3CombinerFactory())
                     .reducer( new Query3ReducerFactory() )
                     .submit();
 
             // Wait and retrieve the result
             try{
                 Map<String, Query3Value> result = future.get();
-                for (Map.Entry<String, Query3Value> entry: result.entrySet()) {
-                    logger.info(entry.getKey() + ";" + entry.getValue().getMinutes());
-                }
                 printResult(result, outPath);
             } catch (Exception ex) {
                 logger.error(ex.getMessage());
