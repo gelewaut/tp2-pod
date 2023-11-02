@@ -23,12 +23,14 @@ public class Query3CombinerFactory implements CombinerFactory<String, Query3Valu
     private class Query3Combiner extends Combiner<Query3Value, Query3Value> {
         private long longestTrip;
         private LocalDateTime longestTripDate;
+        private String endStation;
 
 
         @Override
         public void beginCombine() {
             this.longestTrip = 0;
             this.longestTripDate = null;
+            this.endStation = null;
         }
 
         @Override
@@ -36,25 +38,29 @@ public class Query3CombinerFactory implements CombinerFactory<String, Query3Valu
             if (longestTripDate == null) {
                 longestTripDate = value.getStartDate();
                 longestTrip = value.getMinutes();
+                endStation = value.getEndStation();
             } else if (value.getMinutes() > this.longestTrip) {
                 this.longestTrip = value.getMinutes();
                 this.longestTripDate = value.getStartDate();
+                this.endStation = value.getEndStation();
             } else if (value.getMinutes() == this.longestTrip) {
                 if (value.getStartDate() != null && longestTripDate.isAfter(value.getStartDate())) {
                     longestTripDate = value.getStartDate();
+                    endStation = value.getEndStation();
                 }
             }
         }
 
         @Override
         public Query3Value finalizeChunk() {
-            return new Query3Value(longestTrip, longestTripDate);
+            return new Query3Value(longestTrip, longestTripDate, endStation);
         }
 
         @Override
         public void reset() {
             this.longestTrip = 0;
             this.longestTripDate = null;
+            this.endStation = null;
         }
     }
 }

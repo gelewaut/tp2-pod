@@ -111,7 +111,7 @@ public class Client3 {
         PrintWriter filePrinter = new PrintWriter(file);
         filePrinter.println("start_station;end_station;start_date;minutes");
         for (Map.Entry<String, Query3Value> entry : result) {
-            filePrinter.println(entry.getKey() + ";" + entry.getValue().getStartDate() + ";" + entry.getValue().getMinutes());
+            filePrinter.println(entry.getKey() + ";" + entry.getValue().getEndStation() + ";" + entry.getValue().getStartDate() + ";" + entry.getValue().getMinutes());
         }
         filePrinter.close();
     }

@@ -12,13 +12,15 @@ import java.time.LocalTime;
 public class Query3Value implements DataSerializable {
     private Long minutes;
     private LocalDateTime startDate;
+    private String endStation;
     private Address address = new Address();
 
     public Query3Value() {}
 
-    public Query3Value(long minutes, LocalDateTime startDate) {
+    public Query3Value(long minutes, LocalDateTime startDate, String endStation) {
         this.minutes = minutes;
         this.startDate = startDate;
+        this.endStation = endStation;
     }
 
     public Long getMinutes() {
@@ -29,10 +31,13 @@ public class Query3Value implements DataSerializable {
         return startDate;
     }
 
+    public String getEndStation() { return endStation; }
+
     @Override
     public void writeData(ObjectDataOutput out) throws IOException {
         out.writeLong(minutes);
         out.writeUTF(startDate.toString());
+        out.writeUTF(endStation);
         address.writeData(out);
     }
 
@@ -40,6 +45,7 @@ public class Query3Value implements DataSerializable {
     public void readData(ObjectDataInput in) throws IOException {
         minutes = in.readLong();
         startDate = LocalDateTime.parse(in.readUTF());
+        endStation = in.readUTF();
         address = new Address();
         address.readData(in); // since Address is DataSerializable let it read its own internal state
     }

@@ -15,6 +15,7 @@ public class Query3ReducerFactory implements ReducerFactory<String, Query3Value,
     private class Query3Reducer extends Reducer<Query3Value, Query3Value> {
         private long longestTrip;
         private LocalDateTime longestTripDate;
+        private String endStation;
 
         @Override
         public void beginReduce() {
@@ -26,21 +27,24 @@ public class Query3ReducerFactory implements ReducerFactory<String, Query3Value,
             if (longestTripDate == null) {
                 longestTripDate =  value.getStartDate();
                 longestTrip = value.getMinutes();
+                endStation = value.getEndStation();
             }
             else if (value.getMinutes() > this.longestTrip) {
                 this.longestTrip = value.getMinutes();
                 this.longestTripDate = value.getStartDate();
+                this.endStation = value.getEndStation();
             }
             else if (value.getMinutes() == this.longestTrip) {
                 if (longestTripDate.isAfter(value.getStartDate())) {
                     longestTripDate = value.getStartDate();
+                    endStation = value.getEndStation();
                 }
             }
         }
 
         @Override
         public Query3Value finalizeReduce() {
-            return new Query3Value(longestTrip, longestTripDate);
+            return new Query3Value(longestTrip, longestTripDate, endStation);
         }
     }
 }
