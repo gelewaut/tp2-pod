@@ -1,5 +1,7 @@
 package ar.edu.itba.pod.tp2.client;
 
+import ar.edu.itba.pod.tp2.collators.Query1Collator;
+import ar.edu.itba.pod.tp2.collators.Query2Collator;
 import ar.edu.itba.pod.tp2.mappers.Query2Mapper;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
@@ -68,17 +70,17 @@ public class Client2 {
             JobTracker jobTracker = hazelcastInstance.getJobTracker("Query2");
 
             Job<String, Ride> job = jobTracker.newJob( source );
-            ICompletableFuture<Map<String, Double>> future = job
+            ICompletableFuture<List<Map.Entry<String,Double>>> future = job
                     .mapper(new Query2Mapper() )
                     .reducer( new Query2ReducerFactory() )
-                    .submit();
+                    .submit(new Query2Collator());
 
             // Wait and retrieve the result
             try{
-                Map<String, Double> result = future.get();
+                List<Map.Entry<String,Double>> result = future.get();
 
 
-                printResult(result, map, outPath, n);
+                printResult(result, outPath, n);
             } catch (Exception ex) {
                 logger.error(ex.getMessage());
             }
@@ -96,20 +98,14 @@ public class Client2 {
         HazelcastClient.shutdownAll();
     }
 
-    private static void printResult(Map<String,Double> result, IMap<Integer, Station> map, String outPath, int n) throws IOException {
+
+    private static void printResult(List<Map.Entry<String,Double>> result, String outPath, int n) throws IOException {
         FileWriter file = new FileWriter(outPath+"query2.csv");
         PrintWriter filePrinter = new PrintWriter(file);
         filePrinter.println("station_a;avg_distance");
-        List<Map.Entry<String,Double>> entries = result.entrySet().stream().sorted((entry1, entry2) ->{
-            int aux = entry2.getValue().compareTo(entry1.getValue());
-            if (aux == 0 ){
-                aux = entry1.getKey().compareTo(entry2.getKey());
-            }
-            return aux;
-        }).toList();
 
         int i = 0;
-        for (Map.Entry<String, Double> entry: entries) {
+        for (Map.Entry<String, Double> entry: result) {
             if (i < n ) {
                 filePrinter.println(entry.getKey() + ";" + String.format("%.2f", entry.getValue()));
             }else {
