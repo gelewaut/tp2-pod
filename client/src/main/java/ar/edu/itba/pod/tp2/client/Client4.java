@@ -1,6 +1,7 @@
 package ar.edu.itba.pod.tp2.client;
 
 import ar.edu.itba.pod.tp2.combiners.Query4CombinerFactory;
+import ar.edu.itba.pod.tp2.collators.Query4Collator;
 import ar.edu.itba.pod.tp2.mappers.Query4Mapper;
 import ar.edu.itba.pod.tp2.models.FluxValue;
 import ar.edu.itba.pod.tp2.models.Ride;
@@ -82,23 +83,23 @@ public class Client4 {
             JobTracker jobTracker = hazelcastInstance.getJobTracker("Query4");
 
             Job<String, Ride> job = jobTracker.newJob( source );
-            ICompletableFuture<Map<String, FluxValue>> future;
+            ICompletableFuture<List<Map.Entry<String, FluxValue>>> future;
             if (props.getProperty("c") == null) {
                 future = job
                         .mapper(new Query4Mapper())
                         .reducer(new Query4ReducerFactory())
-                        .submit();
+                        .submit(new Query4Collator());
             } else {
                 future = job
                     .mapper(new Query4Mapper() )
                     .combiner(new Query4CombinerFactory())
                     .reducer( new Query4ReducerCombinerFactory() )
-                    .submit();
+                    .submit(new Query4Collator());
             }
 
             // Wait and retrieve the result
             try{
-                Map<String, FluxValue> result = future.get();
+                List<Map.Entry<String, FluxValue>> result = future.get();
                 printResult(result, outPath);
             } catch (Exception ex) {
                 logger.error(ex.getMessage());
@@ -118,18 +119,11 @@ public class Client4 {
         HazelcastClient.shutdownAll();
     }
 
-    private static void printResult(Map<String, FluxValue> result, String outPath) throws IOException {
+    private static void printResult(List<Map.Entry<String, FluxValue>> result, String outPath) throws IOException {
         FileWriter file = new FileWriter(outPath+"query4.csv");
         PrintWriter filePrinter = new PrintWriter(file);
         filePrinter.println("station;pos_afflux;neutral_afflux;negative_afflux");
-        List<Map.Entry<String, FluxValue>> entries = result.entrySet().stream().sorted((entry1, entry2) -> {
-            int aux = Long.compare(entry2.getValue().getPositive(), entry1.getValue().getPositive());
-            if (aux == 0) {
-                return entry1.getKey().compareTo(entry2.getKey());
-            }
-            return aux;
-        }).toList();
-        for (Map.Entry<String, FluxValue> entry : entries) {
+        for (Map.Entry<String, FluxValue> entry : result) {
             filePrinter.println(entry.getKey() + ";" + entry.getValue());
         }
         filePrinter.close();
