@@ -38,7 +38,7 @@ public class Client4 {
         String outPath = props.getProperty("outPath");
         String address = props.getProperty("addresses");
 
-        if (inPath == null || outPath == null || address == null || props.getProperty("startDate") == null || props.getProperty("startDate") == null) {
+        if (inPath == null || outPath == null || address == null || props.getProperty("startDate") == null || props.getProperty("endDate") == null) {
             logger.error("Missing Arguments");
             return;
         }
