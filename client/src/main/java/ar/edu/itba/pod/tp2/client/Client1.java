@@ -1,5 +1,7 @@
 package ar.edu.itba.pod.tp2.client;
 
+import ar.edu.itba.pod.tp2.collators.Query1Collator;
+import ar.edu.itba.pod.tp2.combiners.Query1CombinerFactory;
 import ar.edu.itba.pod.tp2.mappers.Query1Mapper;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
@@ -76,7 +78,8 @@ public class Client1 {
             Job<String, Ride> job = jobTracker.newJob( source );
             ICompletableFuture<Map<String, Long>> future = job
                     .mapper(new Query1Mapper() )
-                    .reducer( new Query1ReducerFactory() )
+                    .combiner(new Query1CombinerFactory())
+                    .reducer(new Query1ReducerFactory() )
                     .submit();
 
             // Wait and retrieve the result
