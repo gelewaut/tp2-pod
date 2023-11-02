@@ -1,9 +1,11 @@
 package ar.edu.itba.pod.tp2.client;
 
+import ar.edu.itba.pod.tp2.combiners.Query4CombinerFactory;
 import ar.edu.itba.pod.tp2.mappers.Query4Mapper;
 import ar.edu.itba.pod.tp2.models.FluxValue;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
+import ar.edu.itba.pod.tp2.reducers.Query4ReducerCombinerFactory;
 import ar.edu.itba.pod.tp2.reducers.Query4ReducerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -80,12 +82,19 @@ public class Client4 {
             JobTracker jobTracker = hazelcastInstance.getJobTracker("Query4");
 
             Job<String, Ride> job = jobTracker.newJob( source );
-            ICompletableFuture<Map<String, FluxValue>> future = job
+            ICompletableFuture<Map<String, FluxValue>> future;
+            if (props.getProperty("c") == null) {
+                future = job
+                        .mapper(new Query4Mapper())
+                        .reducer(new Query4ReducerFactory())
+                        .submit();
+            } else {
+                future = job
                     .mapper(new Query4Mapper() )
-                    .reducer( new Query4ReducerFactory() )
-//                    .combiner(new Query4CombinerFactory())
-//                    .reducer( new Query4ReducerCombinerFactory() )
+                    .combiner(new Query4CombinerFactory())
+                    .reducer( new Query4ReducerCombinerFactory() )
                     .submit();
+            }
 
             // Wait and retrieve the result
             try{

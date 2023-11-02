@@ -77,11 +77,20 @@ public class Client1 {
             JobTracker jobTracker = hazelcastInstance.getJobTracker("Query1");
 
             Job<String, Ride> job = jobTracker.newJob( source );
-            ICompletableFuture<List<Map.Entry<String,Long>>> future = job
-                    .mapper(new Query1Mapper() )
-                    .combiner(new Query1CombinerFactory())
-                    .reducer(new Query1ReducerFactory() )
-                    .submit(new Query1Collator());
+            ICompletableFuture<List<Map.Entry<String,Long>>> future;
+
+            if (props.getProperty("c") == null) {
+                future = job
+                        .mapper(new Query1Mapper() )
+                        .reducer(new Query1ReducerFactory() )
+                        .submit(new Query1Collator());
+            } else {
+                future = job
+                        .mapper(new Query1Mapper() )
+                        .combiner(new Query1CombinerFactory())
+                        .reducer(new Query1ReducerFactory() )
+                        .submit(new Query1Collator());
+            }
 
             // Wait and retrieve the result
             try{
