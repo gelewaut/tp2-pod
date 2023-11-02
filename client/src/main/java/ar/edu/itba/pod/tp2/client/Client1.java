@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.tp2.client;
 
-//import ar.edu.itba.pod.tp2.collators.Query1Collator;
+import ar.edu.itba.pod.tp2.collators.Query1Collator;
 import ar.edu.itba.pod.tp2.combiners.Query1CombinerFactory;
 import ar.edu.itba.pod.tp2.mappers.Query1Mapper;
 import ar.edu.itba.pod.tp2.models.Ride;
@@ -76,15 +76,15 @@ public class Client1 {
             JobTracker jobTracker = hazelcastInstance.getJobTracker("Query1");
 
             Job<String, Ride> job = jobTracker.newJob( source );
-            ICompletableFuture<Map<String, Long>> future = job
+            ICompletableFuture<List<Map.Entry<String,Long>>> future = job
                     .mapper(new Query1Mapper() )
                     .combiner(new Query1CombinerFactory())
                     .reducer(new Query1ReducerFactory() )
-                    .submit();
+                    .submit(new Query1Collator());
 
             // Wait and retrieve the result
             try{
-                Map<String, Long> result = future.get();
+                List<Map.Entry<String, Long>> result = future.get();
                 printResult(result, outPath);
             } catch (Exception ex) {
                 logger.error(ex.getMessage());
@@ -102,19 +102,11 @@ public class Client1 {
         HazelcastClient.shutdownAll();
     }
 
-    private static void printResult(Map<String,Long> result, String outPath) throws IOException {
+    private static void printResult(List<Map.Entry<String, Long>> result, String outPath) throws IOException {
         FileWriter file = new FileWriter(outPath+"query1.csv");
         PrintWriter filePrinter = new PrintWriter(file);
         filePrinter.println("station_a;station_b;trips_between_a_b");
-        List<Map.Entry<String, Long>> sortedEntries = result.entrySet().stream().sorted((entry1, entry2) -> {
-            int longComparison = Long.compare(entry2.getValue(), entry1.getValue());
-            if (longComparison != 0) {
-                return longComparison;
-            } else {
-                return entry1.getKey().compareTo(entry2.getKey());
-            }
-        }).toList();
-        for (Map.Entry<String, Long> entry: sortedEntries) {
+        for (Map.Entry<String, Long> entry: result) {
             filePrinter.println(entry.getKey()+";"+entry.getValue());
         }
         filePrinter.close();
