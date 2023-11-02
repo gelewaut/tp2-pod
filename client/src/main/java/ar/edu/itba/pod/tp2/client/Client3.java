@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class Client3 {
-    private static final Logger logger = LoggerFactory.getLogger(Client1.class);
+    private static final Logger logger = LoggerFactory.getLogger(Client3.class);
     public static void main(String[] args) {
         Properties props = System.getProperties();
         String inPath = props.getProperty("inPath");
