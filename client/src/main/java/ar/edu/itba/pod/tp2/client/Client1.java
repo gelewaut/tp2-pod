@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.tp2.client;
 
-import ar.edu.itba.pod.tp2.collators.Query1Collator;
+//import ar.edu.itba.pod.tp2.collators.Query1Collator;
 import ar.edu.itba.pod.tp2.combiners.Query1CombinerFactory;
 import ar.edu.itba.pod.tp2.mappers.Query1Mapper;
 import ar.edu.itba.pod.tp2.models.Ride;
