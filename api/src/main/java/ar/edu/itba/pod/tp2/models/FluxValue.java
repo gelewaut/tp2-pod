@@ -48,4 +48,12 @@ public class FluxValue implements DataSerializable {
     public long getPositive() {
         return positive;
     }
+
+    public long getNegative() {
+        return negative;
+    }
+
+    public long getNeutral() {
+        return neutral;
+    }
 }

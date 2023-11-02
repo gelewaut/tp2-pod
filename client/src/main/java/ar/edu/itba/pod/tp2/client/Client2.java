@@ -1,11 +1,13 @@
 package ar.edu.itba.pod.tp2.client;
 
-import ar.edu.itba.pod.tp2.collators.Query1Collator;
 import ar.edu.itba.pod.tp2.collators.Query2Collator;
+import ar.edu.itba.pod.tp2.combiners.Query2CombinerFactory;
 import ar.edu.itba.pod.tp2.mappers.Query2Mapper;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
+import ar.edu.itba.pod.tp2.reducers.Query2ReducerCombinerFactory;
 import ar.edu.itba.pod.tp2.reducers.Query2ReducerFactory;
+import ar.edu.itba.pod.tp2.reducers.Query4ReducerCombinerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
@@ -19,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Client2 {
@@ -29,11 +32,11 @@ public class Client2 {
         String outPath = props.getProperty("outPath");
         String address = props.getProperty("addresses");
 
-        if (inPath == null || outPath == null || address == null || props.getProperty("N") == null) {
+        if (inPath == null || outPath == null || address == null || props.getProperty("n") == null) {
             logger.error("Missing Arguments");
             return;
         }
-        int n = Integer.parseInt(props.getProperty("N"));
+        int n = Integer.parseInt(props.getProperty("n"));
         String[] addresses = address.split(";");
 
         // Client Config
@@ -53,16 +56,16 @@ public class Client2 {
             FileWriter file = new FileWriter(outPath+"time2.txt");
             PrintWriter filePrinter = new PrintWriter(file);
 
-            filePrinter.println(LocalDateTime.now() + " - Inicio de la lectura del archivo");
+            filePrinter.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS")) + " - Inicio de la lectura del archivo");
             logger.info("Inicio de la lectura del archivo");
             new DataParser().readFile(hazelcastInstance, inPath, "g9-query2-map", "g9-query2-list");
-            filePrinter.println(LocalDateTime.now() + " - Fin de lectura del archivo");
+            filePrinter.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS")) + " - Fin de lectura del archivo");
             logger.info("Fin de lectura del archivo");
 
             IMap<Integer, Station> map = hazelcastInstance.getMap("g9-query2-map");
             IList<Ride> list = hazelcastInstance.getList("g9-query2-list");
 
-            filePrinter.println(LocalDateTime.now() + " - Inicio del trabajo map/reduce");
+            filePrinter.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS")) + " - Inicio del trabajo map/reduce");
             logger.info("Inicio del trabajo map/reduce");
 
             final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
@@ -72,20 +75,20 @@ public class Client2 {
             Job<String, Ride> job = jobTracker.newJob( source );
             ICompletableFuture<List<Map.Entry<String,Double>>> future = job
                     .mapper(new Query2Mapper() )
-                    .reducer( new Query2ReducerFactory() )
+//                    .reducer( new Query2ReducerFactory() )
+                    .combiner(new Query2CombinerFactory())
+                    .reducer(new Query2ReducerCombinerFactory())
                     .submit(new Query2Collator());
 
             // Wait and retrieve the result
             try{
                 List<Map.Entry<String,Double>> result = future.get();
-
-
                 printResult(result, outPath, n);
             } catch (Exception ex) {
                 logger.error(ex.getMessage());
             }
 
-            filePrinter.println(LocalDateTime.now() + " - Fin del trabajo map/reduce");
+            filePrinter.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS")) + " - Fin del trabajo map/reduce");
             logger.info("Fin del trabajo map/reduce");
             filePrinter.close();
 
@@ -103,7 +106,6 @@ public class Client2 {
         FileWriter file = new FileWriter(outPath+"query2.csv");
         PrintWriter filePrinter = new PrintWriter(file);
         filePrinter.println("station_a;avg_distance");
-
         int i = 0;
         for (Map.Entry<String, Double> entry: result) {
             if (i < n ) {

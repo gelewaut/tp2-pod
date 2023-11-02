@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Client3 {
@@ -50,16 +51,16 @@ public class Client3 {
         try {
             FileWriter file = new FileWriter(outPath+"time3.txt");
             PrintWriter filePrinter = new PrintWriter(file);
-            filePrinter.println(LocalDateTime.now() + " - Inicio de la lectura del archivo");
+            filePrinter.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS")) + " - Inicio de la lectura del archivo");
             logger.info("Inicio de la lectura del archivo");
             new DataParser().readFile(hazelcastInstance, inPath, "g9-query3-map", "g9-query3-list");
-            filePrinter.println(LocalDateTime.now() + " - Fin de lectura del archivo");
+            filePrinter.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS")) + " - Fin de lectura del archivo");
             logger.info("Fin de lectura del archivo");
 
             IMap<Long, Station> map = hazelcastInstance.getMap("g9-query3-map");
             IList<Ride> list = hazelcastInstance.getList("g9-query3-list");
 
-            filePrinter.println(LocalDateTime.now() + " - Inicio del trabajo map/reduce");
+            filePrinter.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS")) + " - Inicio del trabajo map/reduce");
             logger.info("Inicio del trabajo map/reduce");
 
             final KeyValueSource<String, Ride> source = KeyValueSource.fromList(list);
@@ -82,7 +83,7 @@ public class Client3 {
                 logger.error(ex.getMessage());
             }
 
-            filePrinter.println(LocalDateTime.now() + " - Fin del trabajo map/reduce");
+            filePrinter.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS")) + " - Fin del trabajo map/reduce");
             logger.info("Fin del trabajo map/reduce");
             filePrinter.close();
 

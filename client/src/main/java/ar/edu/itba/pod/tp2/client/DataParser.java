@@ -15,6 +15,10 @@ import java.io.Reader;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DataParser {
     private static final Logger logger = LoggerFactory.getLogger(DataParser.class);
@@ -39,7 +43,11 @@ public class DataParser {
             String lineBikes = brBikes.readLine(); // skip first line
             String lineStations = brStations.readLine(); // skip first line
 
+            Map<Long, Station> auxMap = new HashMap<>();
+            List<Ride> auxList = new ArrayList<>();
+
             logger.info("Loading stations");
+            int i = 0;
             while ((lineStations = brStations.readLine()) != null) {
                 String[] values = lineStations.split(";");
                 long pk = Long.parseLong(values[0]);
@@ -47,8 +55,16 @@ public class DataParser {
                         values[1],
                         Double.parseDouble(values[2]),
                         Double.parseDouble(values[3]));
-                stations.put(pk,s);
+                auxMap.put(pk,s);
+                if (i > 1000) {
+                    stations.putAll(auxMap);
+                    auxMap = new HashMap<>();
+                    i = 0;
+                }
+                i++;
             }
+            stations.putAll(auxMap);
+            i = 0;
 
             logger.info("loading rides");
             while ((lineBikes = brBikes.readLine()) != null) {
@@ -62,8 +78,15 @@ public class DataParser {
                         Long.parseLong(values[3]),
                         isMember==1 ? Boolean.TRUE : Boolean.FALSE
                 );
-                rides.add(r);
+                auxList.add(r);
+                if (i > 1000) {
+                    rides.addAll(auxList);
+                    auxList = new ArrayList<>();
+                    i = 0;
+                }
+                i++;
             }
+            rides.addAll(auxList);
 
             logger.info("Finished loading csv " + LocalTime.now());
         } catch (Exception ex) {
