@@ -1,9 +1,11 @@
 package ar.edu.itba.pod.tp2.client;
 
+import ar.edu.itba.pod.tp2.combiners.Query3CombinerFactory;
 import ar.edu.itba.pod.tp2.mappers.Query3Mapper;
 import ar.edu.itba.pod.tp2.models.Query3Value;
 import ar.edu.itba.pod.tp2.models.Ride;
 import ar.edu.itba.pod.tp2.models.Station;
+import ar.edu.itba.pod.tp2.reducers.Query1ReducerFactory;
 import ar.edu.itba.pod.tp2.reducers.Query3ReducerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -69,6 +71,7 @@ public class Client3 {
             Job<String, Ride> job = jobTracker.newJob( source );
             ICompletableFuture<Map<String, Query3Value>> future = job
                     .mapper(new Query3Mapper() )
+                    .combiner(new Query3CombinerFactory())
                     .reducer( new Query3ReducerFactory() )
                     .submit();
 

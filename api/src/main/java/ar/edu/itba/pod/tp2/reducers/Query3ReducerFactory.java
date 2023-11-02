@@ -23,7 +23,11 @@ public class Query3ReducerFactory implements ReducerFactory<String, Query3Value,
 
         @Override
         public void reduce(Query3Value value) {
-            if (value.getMinutes() > this.longestTrip) {
+            if (longestTripDate == null) {
+                longestTripDate =  value.getStartDate();
+                longestTrip = value.getMinutes();
+            }
+            else if (value.getMinutes() > this.longestTrip) {
                 this.longestTrip = value.getMinutes();
                 this.longestTripDate = value.getStartDate();
             }
